@@ -23,7 +23,6 @@ class MyScene < SKScene
     @bear = SKSpriteNode.spriteNodeWithTexture(temp)
     @bear.position = CGPointMake(CGRectGetMidX(self.frame), CGRectGetMidY(self.frame))
     self.addChild(@bear)
-    self.walking_bear
 
     self
   end
@@ -44,16 +43,46 @@ class MyScene < SKScene
 
   def touchesEnded(touches, withEvent: event)
     location = touches.anyObject.locationInNode(self)
-    if location.x <= CGRectGetMidX(self.frame)
+
+    screen_size = self.frame.size
+    bear_velocity = screen_size.width / 3.0
+
+    move_difference = CGPointMake(location.x - @bear.position.x, location.y - @bear.position.y)
+    distance_to_move = Math.sqrt(move_difference.x * move_difference.x + move_difference.y * move_difference.y)
+    move_duration = distance_to_move / bear_velocity
+
+    if move_difference.x < 0
       multiplier_for_direction = 1
     else
       multiplier_for_direction = -1
     end
     @bear.xScale = @bear.xScale.abs * multiplier_for_direction
-    self.walking_bear
+
+    if @bear.actionForKey("bearMoving")
+      # Changing Animation Facing Direction Based on Movement
+      @bear.removeActionForKey("bearMoving")
+    end
+
+    if !@bear.actionForKey("walkingInPlaceBear")
+      # if legs are not moving go ahead and start them
+      self.walking_bear
+    end
+
+    move_action = SKAction.moveTo(location, duration: move_duration)
+    done_action = SKAction.runBlock(lambda {
+      puts "Animation Completed"
+      self.bear_move_ended
+    })
+
+    move_action_with_done = SKAction.sequence([move_action, done_action])
+    @bear.runAction(move_action_with_done, withKey: "bearMoving")
   end
 
   def touchesBegan(touches, withEvent: event)
+  end
+
+  def bear_move_ended
+    @bear.removeAllActions
   end
 
   def update(current_time)

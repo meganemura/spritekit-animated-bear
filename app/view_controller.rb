@@ -1,10 +1,15 @@
 class ViewController < UIViewController
+
+  def loadView
+    bounds = UIScreen.mainScreen.bounds
+    self.view = SKView.alloc.initWithFrame(bounds)
+  end
+
   def viewDidLoad
     super
 
     # Configure the view.
-    sk_view = SKView.alloc.init
-    sk_view.bounds = self.view.bounds
+    sk_view = self.view
     sk_view.showsFPS = true
     sk_view.showsNodeCount = true
 

@@ -42,6 +42,20 @@ class MyScene < SKScene
     )
   end
 
+  def touchesEnded(touches, withEvent: event)
+    location = touches.anyObject.locationInNode(self)
+    if location.x <= CGRectGetMidX(self.frame)
+      multiplier_for_direction = 1
+    else
+      multiplier_for_direction = -1
+    end
+    @bear.xScale = @bear.xScale.abs * multiplier_for_direction
+    self.walking_bear
+  end
+
+  def touchesBegan(touches, withEvent: event)
+  end
+
   def update(current_time)
     # Called before each frame is rendered
   end

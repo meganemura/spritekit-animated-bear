@@ -19,8 +19,6 @@ class ViewController < UIViewController
 
     # Present the scene.
     sk_view.presentScene(scene)
-
-    self.view = sk_view
   end
 
   def shouldAutorotate
